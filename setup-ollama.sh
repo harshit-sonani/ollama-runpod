@@ -38,22 +38,33 @@ fi
 
 # Check for required packages
 print_step "Checking required packages..."
-REQUIRED_PACKAGES=("curl" "python3")
 NEED_UPDATE=false
 
-for pkg in "${REQUIRED_PACKAGES[@]}"; do
-    if ! dpkg -l "$pkg" 2>/dev/null | grep -q ^ii; then
-        print_info "Installing $pkg..."
-        if [ "$NEED_UPDATE" = false ]; then
-            apt-get update
-            NEED_UPDATE=true
-        fi
-        apt-get install -y "$pkg"
-        print_info "$pkg installed successfully!"
-    else
-        print_info "$pkg is already installed."
+# Check and install curl if not present
+if ! dpkg -l curl 2>/dev/null | grep -q ^ii; then
+    print_info "Installing curl..."
+    if [ "$NEED_UPDATE" = false ]; then
+        apt-get update
+        NEED_UPDATE=true
     fi
-done
+    apt-get install -y curl
+    print_info "curl installed successfully!"
+else
+    print_info "curl is already installed."
+fi
+
+# Check and install python3 if not present
+if ! dpkg -l python3 2>/dev/null | grep -q ^ii; then
+    print_info "Installing python3..."
+    if [ "$NEED_UPDATE" = false ]; then
+        apt-get update
+        NEED_UPDATE=true
+    fi
+    apt-get install -y python3
+    print_info "python3 installed successfully!"
+else
+    print_info "python3 is already installed."
+fi
 
 # Step 0: Detect IP address
 print_step "Step 0: Detecting instance IP address..."
