@@ -78,18 +78,8 @@ else
     print_info "Ollama version: $OLLAMA_VERSION"
 fi
 
-# Step 2: Pull glm-4.7-flash model
-print_step "Step 2: Pulling glm-4.7-flash model..."
-if ! ollama list 2>/dev/null | grep -q "glm-4.7-flash"; then
-    print_info "Downloading model..."
-    ollama pull glm-4.7-flash
-    print_info "Model downloaded successfully!"
-else
-    print_info "Model glm-4.7-flash is already downloaded."
-fi
-
-# Step 3: Configure Ollama for public access
-print_step "Step 3: Configuring Ollama for public access..."
+# Step 2: Configure Ollama for public access
+print_step "Step 2: Configuring Ollama for public access..."
 
 # Kill any existing ollama processes
 print_info "Stopping any existing Ollama processes..."
@@ -112,6 +102,16 @@ for i in {1..30}; do
     sleep 1
 done
 echo ""
+
+# Step 3: Pull glm-4.7-flash model
+print_step "Step 3: Pulling glm-4.7-flash model..."
+if ! ollama list 2>/dev/null | grep -q "glm-4.7-flash"; then
+    print_info "Downloading model..."
+    ollama pull glm-4.7-flash
+    print_info "Model downloaded successfully!"
+else
+    print_info "Model glm-4.7-flash is already downloaded."
+fi
 
 # Step 4: Verify connection
 print_step "Step 4: Verifying connection..."
