@@ -36,6 +36,25 @@ if [ "$(id -u)" -eq 0 ]; then
     print_warning "Continuing setup in container environment..."
 fi
 
+# Check for required packages
+print_step "Checking required packages..."
+REQUIRED_PACKAGES=("curl" "python3")
+NEED_UPDATE=false
+
+for pkg in "${REQUIRED_PACKAGES[@]}"; do
+    if ! dpkg -l "$pkg" 2>/dev/null | grep -q ^ii; then
+        print_info "Installing $pkg..."
+        if [ "$NEED_UPDATE" = false ]; then
+            apt-get update
+            NEED_UPDATE=true
+        fi
+        apt-get install -y "$pkg"
+        print_info "$pkg installed successfully!"
+    else
+        print_info "$pkg is already installed."
+    fi
+done
+
 # Step 0: Detect IP address
 print_step "Step 0: Detecting instance IP address..."
 DETECTED_IP=""
@@ -57,14 +76,16 @@ print_info "Detected IP: ${DETECTED_IP}"
 
 # Step 1: Install Ollama
 print_step "Step 1: Installing Ollama..."
-if ! command -v ollama &> /dev/null; then
+if ! dpkg -l ollama 2>/dev/null | grep -q ^ii; then
     print_info "Checking for required dependencies..."
 
     # Install zstd if not present (required for Ollama installation)
-    if ! command -v zstd &> /dev/null; then
+    if ! dpkg -l zstd 2>/dev/null | grep -q ^ii; then
         print_info "Installing zstd..."
         apt-get update && apt-get install -y zstd
         print_info "zstd installed successfully!"
+    else
+        print_info "zstd is already installed."
     fi
 
     print_info "Downloading and installing Ollama..."
