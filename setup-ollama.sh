@@ -88,7 +88,7 @@ sleep 1
 
 # Start Ollama in background with public access
 print_info "Starting Ollama server..."
-nohup ollama serve --host 0.0.0.0:11434 > /tmp/ollama.log 2>&1 &
+OLLAMA_HOST=0.0.0.0 nohup ollama serve > /tmp/ollama.log 2>&1 &
 OLLAMA_PID=$!
 
 # Wait for Ollama to start
@@ -207,7 +207,7 @@ ollama pull <model-name>
 pkill -f "ollama serve"
 
 # Restart Ollama:
-pkill -f "ollama serve" && sleep 2 && nohup ollama serve --host 0.0.0.0:11434 > /tmp/ollama.log 2>&1 &
+pkill -f "ollama serve" && sleep 2 && OLLAMA_HOST=0.0.0.0 nohup ollama serve > /tmp/ollama.log 2>&1 &
 
 ===================================
 EOF
