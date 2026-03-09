@@ -58,6 +58,15 @@ print_info "Detected IP: ${DETECTED_IP}"
 # Step 1: Install Ollama
 print_step "Step 1: Installing Ollama..."
 if ! command -v ollama &> /dev/null; then
+    print_info "Checking for required dependencies..."
+
+    # Install zstd if not present (required for Ollama installation)
+    if ! command -v zstd &> /dev/null; then
+        print_info "Installing zstd..."
+        apt-get update && apt-get install -y zstd
+        print_info "zstd installed successfully!"
+    fi
+
     print_info "Downloading and installing Ollama..."
 
     # Create a temporary directory for installation
@@ -105,6 +114,19 @@ echo ""
 
 # Step 3: Pull glm-4.7-flash model
 print_step "Step 3: Pulling glm-4.7-flash model..."
+
+# Check available disk space (need at least 20GB for the model)
+print_info "Checking available disk space..."
+AVAILABLE_KB=$(df / | tail -1 | awk '{print $4}')
+REQUIRED_KB=20000000  # 20GB in KB
+if [ $AVAILABLE_KB -lt $REQUIRED_KB ]; then
+    print_error "Not enough disk space. Need at least 20GB free, but only ${AVAILABLE_KB}KB available."
+    print_info "Available space: $(df -h / | tail -1 | awk '{print $4}')"
+    print_error "Please free up space or use a smaller model."
+    exit 1
+fi
+print_info "Disk space check passed."
+
 if ! ollama list 2>/dev/null | grep -q "glm-4.7-flash"; then
     print_info "Downloading model..."
     ollama pull glm-4.7-flash
