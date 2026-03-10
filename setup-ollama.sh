@@ -303,4 +303,4 @@ echo ""
 
 print_info "Setup Complete!"
 print_info "Ollama is now running on ${DETECTED_IP}:11434"
-print_info "You can access it from another machine using the IP above.
+print_info "You can access it from another machine using the IP above."
